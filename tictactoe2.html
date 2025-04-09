@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Tic Tac Toe with Scoreboard</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 20px;
+      background: #f0f0f0;
+    }
+    #gameArea {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    h1 {
+      color: #333;
+    }
+    #players {
+      margin-bottom: 10px;
+    }
+    #scoreboard {
+      margin-bottom: 20px;
+      font-size: 1.1em;
+      color: #222;
+    }
+    #board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-gap: 5px;
+      margin-bottom: 15px;
+    }
+    .cell {
+      width: 100px;
+      height: 100px;
+      font-size: 2em;
+      background: #fff;
+      border: 2px solid #333;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+    }
+    #message {
+      font-size: 1.2em;
+      margin-bottom: 10px;
+      color: green;
+    }
+    input, button {
+      padding: 8px;
+      margin: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<div id="gameArea">
+  <h1>Tic Tac Toe</h1>
+
+  <div id="players">
+    <input type="text" id="playerX" placeholder="Player X Name" />
+    <input type="text" id="playerO" placeholder="Player O Name" />
+    <button onclick="startGame()">Start Game</button>
+  </div>
+
+  <div id="scoreboard">
+    <span id="nameX">Player X</span>: <span id="scoreX">0</span> | 
+    <span id="nameO">Player O</span>: <span id="scoreO">0</span>
+  </div>
+
+  <div id="board"></div>
+  <div id="message"></div>
+  <button onclick="resetGame()">Next Round</button>
+</div>
+
+<script>
+  const board = document.getElementById('board');
+  const message = document.getElementById('message');
+  const scoreXEl = document.getElementById('scoreX');
+  const scoreOEl = document.getElementById('scoreO');
+  const nameXEl = document.getElementById('nameX');
+  const nameOEl = document.getElementById('nameO');
+
+  let cells = [];
+  let currentPlayer = 'X';
+  let gameOver = false;
+  let playerX = 'Player X';
+  let playerO = 'Player O';
+  let scoreX = 0;
+  let scoreO = 0;
+
+  function startGame() {
+    playerX = document.getElementById('playerX').value || 'Player X';
+    playerO = document.getElementById('playerO').value || 'Player O';
+    nameXEl.textContent = playerX;
+    nameOEl.textContent = playerO;
+    resetGame();
+  }
+
+  function createBoard() {
+    board.innerHTML = '';
+    cells = [];
+    gameOver = false;
+    message.textContent = '';
+    for (let i = 0; i < 9; i++) {
+      const cell = document.createElement('div');
+      cell.classList.add('cell');
+      cell.addEventListener('click', () => makeMove(i));
+      board.appendChild(cell);
+      cells.push(cell);
+    }
+  }
+
+  function makeMove(index) {
+    if (gameOver || cells[index].textContent !== '') return;
+    cells[index].textContent = currentPlayer;
+
+    if (checkWin(currentPlayer)) {
+      gameOver = true;
+      if (currentPlayer === 'X') {
+        scoreX++;
+        message.textContent = `${playerX} wins!`;
+        scoreXEl.textContent = scoreX;
+      } else {
+        scoreO++;
+        message.textContent = `${playerO} wins!`;
+        scoreOEl.textContent = scoreO;
+      }
+    } else if (cells.every(cell => cell.textContent !== '')) {
+      message.textContent = "It's a draw!";
+      gameOver = true;
+    } else {
+      currentPlayer = currentPlayer === 'X' ? 'O' : 'X';
+    }
+  }
+
+  function checkWin(player) {
+    const winPatterns = [
+      [0,1,2],[3,4,5],[6,7,8],
+      [0,3,6],[1,4,7],[2,5,8],
+      [0,4,8],[2,4,6]
+    ];
+    return winPatterns.some(pattern =>
+      pattern.every(index => cells[index].textContent === player)
+    );
+  }
+
+  function resetGame() {
+    currentPlayer = 'X';
+    createBoard();
+  }
+</script>
+
+</body>
+</html>
